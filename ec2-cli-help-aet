@@ -1,0 +1,18 @@
+ 
+
+Filtered List of EBS volumes that are in available status and produces tab delimited output, can be imported in Excel
+
+aws ec2 describe-volumes --filters Name=status,Values=available --query 'Volumes[*].{VolumeId:VolumeId, CostCenter:Tags[?Key==`costcenter`]|[0].Value, Name:Tags[?Key==`Name`]|[0].Value, Appname:Tags[?Key==`appname`]|[0].Value,DeptId:Tags[?Key==`deptid`]|[0].Value, State: State, CreatTime: CreateTime, Size: Size, VolumeType: VolumeType, SnapshotId: SnapshotId}' --output text  --profile TEST  > C:/GitRepo/general-work-log/volumes.csv
+
+ 
+
+List of EC2 instances with specific fields and produces tab delimited output, can be imported in Excel
+
+aws ec2 describe-instances --query 'Reservations[*].Instances[*].{Platform: Platform,InstanceId:InstanceId, Subnet:SubnetId,IPAddress:PrivateIpAddress,
+InstanceType:InstanceType, Zone:Placement.AvailabilityZone, Name:Tags[?Key==`Name`]|[0].Value, CostCenter:Tags[?Key==`costcenter`]|[0].Value, app:Tags[?Key==`appname`]|[0].Value}' --output text  --profile TEST  > C:/GitRepo/general-work-log/ec2instances.csv)
+
+ 
+
+Returns Count of total Number of EC2 instances in running state in a given account and region.
+
+aws ec2 describe-instances --filters Name=instance-state-name,Values=running  --region us-east-1  | jq '.Reservations'  | jq length | awk '{sum+=$0} END{print sum}'
